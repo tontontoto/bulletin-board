@@ -184,7 +184,7 @@ export default function HomePage(): React.JSX.Element {
                     <p>作成者ID: {thread.random_user_id.substring(0, 8)}...</p>
                     <p>作成日時: {new Date(thread.created_at).toLocaleString('ja-JP')}</p>
                     {thread.post_count !== undefined && (
-                        <p>返信数: {thread.post_count}</p>
+                        <p>返信数: {thread.post_count}件</p>
                     )}
                   </div>
                 </div>
