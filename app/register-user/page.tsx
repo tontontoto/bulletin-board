@@ -1,7 +1,7 @@
 // nextjs-frontend/app/register-user/page.tsx
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { RegisterUserResponse } from '../../api/api';
 import { useUser } from '../../contexts/UserContext'; // ✨ useUserフックをインポート
 import { useRouter } from 'next/navigation'; // ✨ useRouterをインポート
@@ -21,6 +21,13 @@ export default function RegisterUserPage(): React.JSX.Element {
 
     const { setRandomUserId } = useUser(); // ✨ useUserからsetRandomUserIdを取得
     const router = useRouter(); // ✨ useRouterを初期化
+
+    // ページタイトルを設定
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            document.title = 'ユーザー登録 | 匿名掲示板';
+        }
+    }, []);
 
     const handleRegister = async (): Promise<void> => {
         if (!phpApiUrl) {
@@ -114,7 +121,9 @@ export default function RegisterUserPage(): React.JSX.Element {
             } else {
                 // ✨ 成功した場合の処理を更新
                 if (data.randomUserId) {
-                    localStorage.setItem('randomUserId', data.randomUserId); // localStorageに保存
+                    if (typeof window !== 'undefined') {
+                        localStorage.setItem('randomUserId', data.randomUserId); // localStorageに保存
+                    }
                     setRandomUserId(data.randomUserId); // ✨ Contextの状態を更新
                     // ユーザー情報ページにリダイレクトすることもできます
                     router.push('/');
@@ -134,109 +143,155 @@ export default function RegisterUserPage(): React.JSX.Element {
     };
 
     return (
-        <div className='flex flex-col w-[80%] shadow-black-500 shadow-[0px_0px_6px_0px_rgba(0,_0,_0,_0.1)] rounded-xl p-8 mx-auto my-10 bg-white items-center justify-center'>
-            <h1 className='text-2xl font-bold mb-4'>匿名ユーザー登録</h1>
-
-            {/* メールアドレス、パスワードの入力部分は変更なし */}
-            <div className='flex flex-col gap-4 mb-4 w-full'>
-                <div>
-                    <input
-                        type="email"
-                        placeholder="メールアドレス"
-                        className={`border p-2 w-full rounded-xl ${emailError ? 'border-red-500' : ''}`}
-                        value={email}
-                        onChange={(e) => {
-                            setEmail(e.target.value);
-                            if (emailError) setEmailError('');
-                        }}
-                    />
-                    {emailError && (
-                        <p className="text-red-500 text-sm mt-1">{emailError}</p>
-                    )}
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center px-4 py-8">
+            <div className="w-full max-w-md">
+                {/* ヘッダーカード */}
+                <div className="bg-white rounded-t-2xl px-6 py-8 shadow-lg">
+                    <div className="text-center">
+                        <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                        </div>
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">ユーザー登録</h1>
+                        <p className="text-gray-600 text-sm md:text-base">匿名掲示板にアカウントを作成</p>
+                    </div>
                 </div>
-                <div>
-                    <input
-                        type="password"
-                        placeholder="パスワード"
-                        className={`border p-2 w-full rounded-xl ${passwordError ? 'border-red-500' : ''}`}
-                        value={password}
-                        onChange={(e) => {
-                            setPassword(e.target.value);
-                            if (passwordError) setPasswordError('');
-                        }}
-                    />
-                    {passwordError && (
-                        <p className="text-red-500 text-sm mt-1">{passwordError}</p>
-                    )}
+
+                {/* フォームカード */}
+                <div className="bg-white rounded-b-2xl px-6 py-6 shadow-lg">
+                    <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
+                        {/* メールアドレス入力 */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                メールアドレス
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="email"
+                                    placeholder="your@example.com"
+                                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
+                                        emailError ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                                    }`}
+                                    value={email}
+                                    onChange={(e) => {
+                                        setEmail(e.target.value);
+                                        if (emailError) setEmailError('');
+                                    }}
+                                />
+                            </div>
+                            {emailError && (
+                                <p className="text-red-500 text-sm mt-2 flex items-center">
+                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    {emailError}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* パスワード入力 */}
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                パスワード
+                            </label>
+                            <div className="relative">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="password"
+                                    placeholder="6文字以上"
+                                    className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
+                                        passwordError ? 'border-red-500 bg-red-50' : 'border-gray-300'
+                                    }`}
+                                    value={password}
+                                    onChange={(e) => {
+                                        setPassword(e.target.value);
+                                        if (passwordError) setPasswordError('');
+                                    }}
+                                />
+                            </div>
+                            {passwordError && (
+                                <p className="text-red-500 text-sm mt-2 flex items-center">
+                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    {passwordError}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* 登録ボタン */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-200 ${
+                                loading
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-blue-600 hover:bg-blue-700 hover:shadow-lg transform hover:-translate-y-0.5'
+                            }`}
+                        >
+                            {loading ? (
+                                <div className="flex items-center justify-center">
+                                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                                    登録中...
+                                </div>
+                            ) : (
+                                '新しい匿名ユーザーとして登録'
+                            )}
+                        </button>
+
+                        {/* エラーメッセージ */}
+                        {displayError && (
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div className="flex items-center">
+                                    <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    <p className="text-red-700 text-sm">{displayError}</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 成功時のレスポンス表示（エラー時のみ表示） */}
+                        {response && response.status === 'error' && !displayError && (
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                <div className="flex items-center">
+                                    <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                    <div>
+                                        <p className="text-red-700 font-medium">APIからエラーが返されました</p>
+                                        <p className="text-red-600 text-sm">{response.message}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </form>
+
+                    {/* ログインリンク */}
+                    <div className="mt-6 pt-6 border-t border-gray-200 text-center">
+                        <p className="text-gray-600 text-sm mb-2">既にアカウントをお持ちですか？</p>
+                        <Link 
+                            href="/login-user" 
+                            className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+                        >
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                            </svg>
+                            ログインする
+                        </Link>
+                    </div>
                 </div>
             </div>
-
-            <button
-                onClick={handleRegister}
-                disabled={loading}
-                style={{
-                    padding: '10px 20px',
-                    fontSize: '16px',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    backgroundColor: loading ? '#ccc' : '#0070f3',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px'
-                }}
-            >
-                {loading ? '登録中...' : '新しい匿名ユーザーとして登録'}
-            </button>
-
-            <div className='flex flex-col items-center center justify-center mt-4'>
-                <p>ユーザーをお持ちですか?</p>
-                <Link href="/login-user" style={{ textDecoration: 'none', color: '#0070f3' }}>
-                    ログイン
-                </Link>
-            </div>
-
-            {/* {displayError && (
-                <div style={{
-                    marginTop: '20px',
-                    color: 'red',
-                    border: '1px solid red',
-                    padding: '10px',
-                    borderRadius: '5px'
-                }}>
-                    <h2>重要！</h2>
-                    <p>{displayError}</p>
-                </div>
-            )} */}
-            {/* 
-            {response && response.status === 'success' && (
-                <div style={{
-                    marginTop: '20px',
-                    backgroundColor: '#e6ffe6',
-                    border: '1px solid #00cc00',
-                    padding: '10px',
-                    borderRadius: '5px'
-                }}>
-                    <h2>登録成功！ 🎉</h2>
-                    <p>メッセージ: {response.message}</p>
-                    {response.randomUserId && (
-                        <p>あなたの匿名ID: <strong>{response.randomUserId}</strong></p>
-                    )}
-                    <p>この匿名IDは、今後の掲示板投稿などで他ユーザに表示されるよー</p>
-                </div>
-            )} */}
-
-            {response && response.status === 'error' && !displayError && (
-                <div style={{
-                    marginTop: '20px',
-                    color: 'red',
-                    border: '1px solid red',
-                    padding: '10px',
-                    borderRadius: '5px'
-                }}>
-                    <h2>APIからエラーが返されました！</h2>
-                    <p>メッセージ: {response.message}</p>
-                </div>
-            )}
-
         </div>
     );
 }

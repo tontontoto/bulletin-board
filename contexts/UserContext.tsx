@@ -24,9 +24,11 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
 
     // コンポーネントがマウントされたときにlocalStorageからユーザー情報を読み込む
     useEffect(() => {
-        const storedUserId = localStorage.getItem('randomUserId');
-        if (storedUserId) {
-            setRandomUserId(storedUserId);
+        if (typeof window !== 'undefined') {
+            const storedUserId = localStorage.getItem('randomUserId');
+            if (storedUserId) {
+                setRandomUserId(storedUserId);
+            }
         }
         setIsLoadingUser(false); // 読み込み完了
     }, []);

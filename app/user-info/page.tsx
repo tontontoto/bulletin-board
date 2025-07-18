@@ -16,6 +16,13 @@ export default function UserInfoPage(): React.JSX.Element {
 
     const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
 
+    // ページタイトルを設定
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            document.title = 'ユーザー情報 | 匿名掲示板';
+        }
+    }, []);
+
     // randomUserId がない場合（未ログイン状態）は登録ページへリダイレクト
     useEffect(() => {
         if (!isLoadingUser && !randomUserId) {

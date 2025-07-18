@@ -23,6 +23,17 @@ export default function ThreadDetailPage(): JSX.Element {
 
     const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
 
+    // ページタイトルを設定（スレッドタイトルが取得できたら動的に更新）
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            if (threadTitle) {
+                document.title = `${threadTitle} | 匿名掲示板`;
+            } else {
+                document.title = 'スレッド詳細 | 匿名掲示板';
+            }
+        }
+    }, [threadTitle]);
+
     // 未ログイン状態なら登録ページへリダイレクト
     useEffect(() => {
         if (!isLoadingUser && !randomUserId) {
@@ -56,7 +67,9 @@ export default function ThreadDetailPage(): JSX.Element {
 
             if (res.ok && data.status === 'success' && data.posts && data.thread) {
                 setThreadTitle(data.thread.title);
-                setPosts(data.posts);
+                // 投稿を降順（新しい投稿が上）にソート
+                const sortedPosts = data.posts.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                setPosts(sortedPosts);
             } else {
                 setDisplayError(data.message || '投稿（返信）一覧の取得に失敗しました。');
             }
@@ -146,82 +159,145 @@ export default function ThreadDetailPage(): JSX.Element {
     // スレッドIDがない、またはロード中の表示
     if (!threadId || isLoadingUser || loadingPosts) {
         return (
-            <div className='flex flex-col w-[80%] shadow-black-500 shadow-[0px_0px_6px_0px_rgba(0,_0,_0,_0.1)] rounded-xl p-8 mx-auto my-10 bg-white items-center justify-center'>
-                <p className='text-xl text-gray-700'>スレッドを読み込み中...</p>
-                {displayError && <p className="text-red-600 text-sm mt-3">{displayError}</p>}
+            <div className='flex flex-col w-full max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10'>
+                <div className='bg-white rounded-lg shadow-md p-8 text-center'>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className='text-xl text-gray-700'>スレッドを読み込み中...</p>
+                    {displayError && (
+                        <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                            <p className="text-red-600 text-sm">{displayError}</p>
+                        </div>
+                    )}
+                </div>
             </div>
         );
     }
 
     return (
-        <div className='flex flex-col w-[80%] shadow-black-500 shadow-[0px_0px_6px_0px_rgba(0,_0,_0,_0.1)] rounded-xl p-8 mx-auto my-10 bg-white items-center justify-center'>
-            <Link href="/" className="self-start text-blue-600 hover:underline mb-4">
-                &larr; スレッド一覧に戻る
-            </Link>
-            <h1 className='text-3xl font-bold mb-2 text-gray-800'>{threadTitle}</h1>
-            <p className='text-xl text-gray-600 mb-6'>スレッドID: {threadId}</p>
+        <div className='flex flex-col w-full max-w-4xl mx-auto px-4 md:px-6 py-6 md:py-10'>
+            {/* ナビゲーション */}
+            <div className="mb-6">
+                <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                    スレッド一覧に戻る
+                </Link>
+            </div>
+
+            {/* スレッドヘッダー */}
+            <div className='bg-white rounded-lg shadow-md p-6 mb-6 border-l-4 border-blue-500'>
+                <h1 className='text-2xl md:text-3xl font-bold mb-2 text-gray-800'>{threadTitle}</h1>
+                <p className='text-sm md:text-base text-gray-600'>スレッドID: {threadId}</p>
+            </div>
 
             {/* 投稿（返信）フォーム */}
-            <div className='w-full max-w-2xl bg-gray-50 p-6 rounded-lg shadow-md mb-8'>
-                <h2 className='text-xl font-semibold mb-4 text-gray-700'>このスレッドに返信する</h2>
+            <div className='bg-white rounded-lg shadow-md p-6 mb-8 border border-gray-200'>
+                <h2 className='text-lg md:text-xl font-semibold mb-4 text-gray-700 flex items-center'>
+                    <svg className="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    このスレッドに返信する
+                </h2>
                 <textarea
-                    className='w-full p-3 border border-gray-300 rounded-lg resize-y min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    className='w-full p-4 border border-gray-300 rounded-lg resize-y min-h-[120px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all'
                     placeholder="ここに返信内容を入力してください (500文字まで)"
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
                     maxLength={500}
                 ></textarea>
-                <div className='flex justify-between items-center mt-3'>
+                <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center mt-4 gap-3'>
                     <span className='text-sm text-gray-500'>
                         {postContent.length}/500文字
                     </span>
                     <button
                         onClick={handlePost}
                         disabled={posting || !randomUserId || postContent.trim().length === 0}
-                        className={`py-2 px-6 rounded-lg text-white font-semibold transition-colors duration-200 ${posting || !randomUserId || postContent.trim().length === 0
+                        className={`w-full sm:w-auto py-2 px-6 rounded-lg text-white font-semibold transition-all duration-200 ${posting || !randomUserId || postContent.trim().length === 0
                             ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-blue-600 hover:bg-blue-700'
+                            : 'bg-blue-600 hover:bg-blue-700 hover:shadow-md'
                             }`}
                     >
                         {posting ? '返信中...' : '返信する'}
                     </button>
                 </div>
                 {displayError && (
-                    <p className="text-red-600 text-sm mt-3">{displayError}</p>
+                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                        <p className="text-red-600 text-sm">{displayError}</p>
+                    </div>
                 )}
                 {successMessage && (
-                    <p className="text-green-600 text-sm mt-3">{successMessage}</p>
+                    <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <p className="text-green-600 text-sm">{successMessage}</p>
+                    </div>
                 )}
             </div>
 
             {/* 投稿（返信）一覧 */}
-            <div className='w-full max-w-2xl'>
-                <h2 className='text-xl font-semibold mb-4 text-gray-700'>返信一覧</h2>
-                {posts.length === 0 ? (
-                    <p className='text-gray-600'>まだ返信はありません。最初の返信をしてみましょう！</p>
-                ) : (
-                    <div className='space-y-4'>
-                        {posts.map((post) => (
-                            <div key={post.id} className='bg-white p-4 rounded-lg shadow-sm border border-gray-200'>
-                                <p className='text-gray-800 break-words whitespace-pre-wrap mb-2'>{post.content}</p>
-                                <div className='text-sm text-gray-500 flex justify-between items-center'>
-                                    <span>
-                                        匿名ID: {post.random_user_id.substring(0, 8)}...
-                                    </span>
-                                    <span>
-                                        {new Date(post.created_at).toLocaleString('ja-JP', {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}
-                                    </span>
+            <div className='bg-white rounded-lg shadow-md border border-gray-200'>
+                <div className="px-6 py-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
+                    <h2 className='text-lg md:text-xl font-semibold text-gray-700 flex items-center justify-between'>
+                        <span className="flex items-center">
+                            <svg className="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-6a2 2 0 012-2h8V4l4 4z" />
+                            </svg>
+                            返信一覧
+                        </span>
+                        <span className="text-sm font-normal text-gray-500">
+                            {posts.length > 0 ? `${posts.length}件の返信` : '返信なし'}
+                        </span>
+                    </h2>
+                </div>
+                
+                <div className="p-6">
+                    {posts.length === 0 ? (
+                        <div className="text-center py-12">
+                            <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                            <p className='text-gray-600 text-lg'>まだ返信はありません</p>
+                            <p className='text-gray-500 text-sm mt-2'>最初の返信をしてみましょう！</p>
+                        </div>
+                    ) : (
+                        <div className='space-y-4'>
+                            {posts.map((post, index) => (
+                                <div key={post.id} className='border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow'>
+                                    {/* 返信番号とタイムスタンプ */}
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-800 rounded-full">
+                                            No.{posts.length - index}
+                                        </span>
+                                        <span className="text-xs text-gray-500">
+                                            {new Date(post.created_at).toLocaleString('ja-JP', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}
+                                        </span>
+                                    </div>
+                                    
+                                    {/* 投稿内容 */}
+                                    <div className="mb-3">
+                                        <p className='text-gray-800 break-words whitespace-pre-wrap leading-relaxed'>{post.content}</p>
+                                    </div>
+                                    
+                                    {/* ユーザー情報 */}
+                                    <div className='flex items-center text-sm text-gray-500'>
+                                        <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        匿名ID: 
+                                        <span className="font-mono ml-1">
+                                            {post.random_user_id}
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                )}
+                            ))}
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
