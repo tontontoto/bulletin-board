@@ -1,9 +1,9 @@
 export interface RegisterUserResponse {
     status: string;
     message: string;
-    randomUserId?: string; // 成功時に返される
-    id?: number; // 成功時に返される
-    error_code?: string; // エラー時に返される
+    randomUserId?: string;
+    id?: number;
+    error_code?: string;
 }
 export interface LoginResponse {
     status: string;
