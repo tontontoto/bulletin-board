@@ -206,7 +206,7 @@ export default function LoginPage(): React.JSX.Element {
                     <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
                         {/* メールアドレス入力 */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-gray-700   mb-2">
                                 メールアドレス
                             </label>
                             <div className="relative">

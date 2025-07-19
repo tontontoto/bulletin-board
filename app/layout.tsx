@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     default: "匿名掲示板",
     template: "%s | 匿名掲示板"
   },
-  description: "匿名で投稿できる掲示板です。安全で自由な議論の場を提供します。",
+  description: "匿名で投稿できる掲示板！★安全で自由な議論の場を提供するよ！★",
 };
 
 export default function RootLayout({
