@@ -20,6 +20,10 @@ export const metadata: Metadata = {
     template: "%s | 匿名掲示板"
   },
   description: "匿名で投稿できる掲示板！★安全で自由な議論の場を提供するよ！★",
+  icons: {
+    icon: '/icon.svg',
+    apple: '/apple-touch-icon.svg'
+  }
 };
 
 export default function RootLayout({
