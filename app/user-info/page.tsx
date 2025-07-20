@@ -9,10 +9,9 @@ import React from 'react';
 export default function UserInfoPage(): React.JSX.Element {
     const { randomUserId, isLoadingUser } = useUser();
     const router = useRouter();
-    // ✨ ユーザーのメールアドレスと登録日を保持するステートを追加
     const [userEmail, setUserEmail] = useState<string | null>(null);
     const [userRegisteredAt, setUserRegisteredAt] = useState<string | null>(null);
-    const [fetchingDetails, setFetchingDetails] = useState<boolean>(true); // 詳細情報取得中フラグ
+    const [fetchingDetails, setFetchingDetails] = useState<boolean>(true);
 
     const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
 
@@ -46,7 +45,6 @@ export default function UserInfoPage(): React.JSX.Element {
 
                 if (res.ok && data.status === 'success' && data.email && data.registeredAt) {
                     setUserEmail(data.email);
-                    // 日付のフォーマットを整形（例: YYYY年MM月DD日）
                     const date = new Date(data.registeredAt);
                     const formattedDate = date.toLocaleDateString('ja-JP', {
                         year: 'numeric',
@@ -59,7 +57,6 @@ export default function UserInfoPage(): React.JSX.Element {
                     setUserRegisteredAt(formattedDate);
                 } else {
                     console.warn("ユーザー詳細情報の取得に失敗しました:", data.message || data.error_code);
-                    // エラーの場合もフラグをfalseにする
                     setUserEmail(null);
                     setUserRegisteredAt(null);
                 }
