@@ -19,11 +19,11 @@ export default function Header(): React.JSX.Element {
 
     return (
         <header className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 shadow-lg">
-            <div className="flex flex-col md:flex-row justify-between items-center px-4 md:px-8 py-4 md:py-5 space-y-3 md:space-y-0">
+            <div className="flex flex-col md:flex-row justify-between items-center px-3 md:px-8 py-2 md:py-5 space-y-2 md:space-y-0">
                 {/* ロゴ部分 */}
                 <div className="w-full md:w-auto text-center md:text-left">
                     <Link href="/" className="group inline-flex items-center no-underline text-white hover:text-blue-100 transition-all duration-200">
-                        <span className="text-xl md:text-2xl font-bold">匿名掲示板</span>
+                        <span className="text-lg md:text-2xl font-bold">匿名掲示板</span>
                     </Link>
                 </div>
 
@@ -32,21 +32,21 @@ export default function Header(): React.JSX.Element {
                     {isLoadingUser ? (
                         // ユーザー情報をロード中
                         <div className="text-center md:text-right">
-                            <div className="inline-flex items-center bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
-                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                <span className="text-white text-sm md:text-base">ロード中...</span>
+                            <div className="inline-flex items-center bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-3 py-1.5">
+                                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white mr-2"></div>
+                                <span className="text-white text-xs md:text-base">ロード中...</span>
                             </div>
                         </div>
                     ) : randomUserId ? (
                         // 匿名IDがある場合（登録済み）
-                        <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 text-center md:text-right">
+                        <div className="flex flex-row md:flex-row items-center gap-3 md:gap-4 text-center md:text-right">
                             {/* ユーザーID表示 */}
                             <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg px-4 py-2">
                                 <span className="text-black text-sm md:text-base font-medium">
                                     <span className="block md:inline opacity-80">匿名ID:</span>
                                     <span className="block md:inline font-mono text-xs md:text-sm mt-1 md:mt-0 md:ml-2">
                                         {/* モバイルでは短縮表示 */}
-                                        <span className="md:hidden">{randomUserId.substring(0, 8)}...</span>
+                                        <span className="md:hidden">{randomUserId}</span>
                                         <span className="hidden md:inline">{randomUserId}</span>
                                     </span>
                                 </span>
