@@ -16,7 +16,7 @@ export default function LoginPage(): React.JSX.Element {
     const [emailError, setEmailError] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
 
-    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
+    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_API_URL;
     const { randomUserId, setRandomUserId, isLoadingUser } = useUser();
     const router = useRouter();
 

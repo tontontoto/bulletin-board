@@ -21,7 +21,7 @@ export default function ThreadDetailPage(): JSX.Element {
     const [displayError, setDisplayError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
+    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_API_URL;
 
     // ページタイトルを設定（スレッドタイトルが取得できたら動的に更新）
     useEffect(() => {

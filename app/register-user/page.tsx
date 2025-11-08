@@ -17,7 +17,7 @@ export default function RegisterUserPage(): React.JSX.Element {
     const [emailError, setEmailError] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
 
-    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
+    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_API_URL;
 
     const { setRandomUserId } = useUser(); // ✨ useUserからsetRandomUserIdを取得
     const router = useRouter(); // ✨ useRouterを初期化

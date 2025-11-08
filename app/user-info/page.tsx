@@ -13,7 +13,7 @@ export default function UserInfoPage(): React.JSX.Element {
     const [userRegisteredAt, setUserRegisteredAt] = useState<string | null>(null);
     const [fetchingDetails, setFetchingDetails] = useState<boolean>(true);
 
-    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
+    const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_API_URL;
 
     // ページタイトルを設定
     useEffect(() => {

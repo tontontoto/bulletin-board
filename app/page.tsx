@@ -18,7 +18,7 @@ export default function HomePage(): React.JSX.Element {
   const [displayError, setDisplayError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_PHP_API_URL;
+  const phpApiUrl: string | undefined = process.env.NEXT_PUBLIC_API_URL;
 
   // 未ログイン状態なら登録ページへリダイレクト
   useEffect(() => {
